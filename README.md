@@ -10,8 +10,8 @@ Create a `config.py` file in the same directory as the script with the following
 TARGET_DATES = ["2025-02-14", "2025-02-15"]
 
 # Viking
-VIKING_ORDER_ID = 0000000  # Your order ID in Viking
 VIKING_COOKIE = "__ca__chat=tbb...; SESSION=MzI3N..."
+VIKING_ORDER_ID = 0000000  # Your order ID in Viking
 
 # Fitatu
 FITATU_USER_ID = 00000000  # Your user ID in Fitatu
@@ -21,13 +21,11 @@ FITATU_AUTHORIZATION = "Bearer eyJ0eXAiOiJKV1..."
 
 ### How to Retrieve Data for Configuration File
 
-1. **Viking Credentials:**
-
+1. **Viking Credentials:** 
    - Obtain the `VIKING_COOKIE` by inspecting your session cookies after logging into Viking.
    - Find your `VIKING_ORDER_ID` in your Viking account/order history.
 
 2. **Fitatu Credentials:**
-
    - `FITATU_USER_ID` can be found in your Fitatu account settings.
    - `FITATU_SECRET` and `FITATU_AUTHORIZATION` tokens are generated from Fitatu’s API or authentication system.
 
@@ -37,6 +35,18 @@ Execute the following command in your terminal:
 
 ```sh
 python3 viking-fitatu-integration.py
+```
+
+## Expected Output
+
+Example output when running the script:
+
+```sh
+Product "Szakszuka z jajkiem sadzonym i szczypiorkiem, chleb graham" created successfully with id 108169011
+Product "Shake wiśniowo-czereśniowy" created successfully with id 108169014
+Product "Pierś z kurczaka w marynacie czosnkowo-miodowej w sosie własnym z ziemniakami i surówką kopenhaską" created successfully with id 108169017
+...
+Diet plan created successfully for 2025-02-21
 ```
 
 ## Requirements
