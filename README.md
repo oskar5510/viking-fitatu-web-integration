@@ -1,4 +1,4 @@
-# viking-fiatu-integration
+# Viking-Fitatu-Integration
 
 create config.py file with given content
 
@@ -10,7 +10,7 @@ VIKING_COOKIE = "__ca__chat=tbb...; SESSION=MzI3N..."
 VIKING_ORDER_ID = 0000000 // your order id in Viking
 
 # Fitatu
-FITATU_USER_ID = 00000000 // your user id in Fiatu
+FITATU_USER_ID = 00000000 // your user id in Fitatu
 FITATU_SECRET= "PYRX..."
 FITATU_AUTHORIZATION= "Bearer eyJ0eXAiOiJKV1..."
 ```

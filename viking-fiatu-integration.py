@@ -6,7 +6,7 @@ from datetime import datetime
 BRAND = "Viking"
 
 viking_headers = {"Cookie": VIKING_COOKIE}
-fiatu_headers = {
+fitatu_headers = {
     "Api-Key": "FITATU-MOBILE-APP",
     "Api-Secret": FITATU_SECRET,
     "Authorization": FITATU_AUTHORIZATION,
@@ -15,9 +15,9 @@ fiatu_headers = {
 
 viking_order_url = "https://panel.kuchniavikinga.pl/api/company/customer/order/{id}"
 viking_date_details_url = "https://panel.kuchniavikinga.pl/api/company/general/menus/delivery/{id}/new"
-fiatu_create_product_url = "https://pl-pl.fitatu.com/api/products"
-fiatu_search_product_url = "https://pl-pl.fitatu.com/api/search/food/user/{id}?date={date}&phrase={phrase}&page=1&limit=1"
-fiatu_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-plan/{id}/days"
+fitatu_create_product_url = "https://pl-pl.fitatu.com/api/products"
+fitatu_search_product_url = "https://pl-pl.fitatu.com/api/search/food/user/{id}?date={date}&phrase={phrase}&page=1&limit=1"
+fitatu_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-plan/{id}/days"
 
 def fetch_data(url, headers):
     response = requests.get(url, headers=headers)
@@ -28,8 +28,8 @@ def fetch_data(url, headers):
         return None
 
 def search_product(name, date):
-    url = fiatu_search_product_url.format(id=FITATU_USER_ID, date=date, phrase=name)
-    response = requests.get(url, headers=fiatu_headers)
+    url = fitatu_search_product_url.format(id=FITATU_USER_ID, date=date, phrase=name)
+    response = requests.get(url, headers=fitatu_headers)
     if response.status_code == 200:
         products = response.json()
         for product in products:
@@ -42,7 +42,7 @@ def search_product(name, date):
     return None
 
 def create_product(product_data):
-    response = requests.post(fiatu_create_product_url, json=product_data, headers=fiatu_headers)
+    response = requests.post(fitatu_create_product_url, json=product_data, headers=fitatu_headers)
     if response.status_code == 201:
         return response.json().get("id")
     else:
@@ -119,7 +119,7 @@ def process_date(target_date, data):
         for meal_name, meal_id in meal_ids.items():
             add_meal(diet_body[target_date]["dietPlan"], meal_name, meal_id, meal_weights.get(meal_name, 100))
 
-        diet_plan_response = requests.post(fiatu_diet_plan_url.format(id=FITATU_USER_ID), json=diet_body, headers=fiatu_headers)
+        diet_plan_response = requests.post(fitatu_diet_plan_url.format(id=FITATU_USER_ID), json=diet_body, headers=fitatu_headers)
         if diet_plan_response.status_code == 202:
             print(f"Diet plan created successfully for {target_date}")
         else:
