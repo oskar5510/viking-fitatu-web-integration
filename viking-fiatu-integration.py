@@ -1,6 +1,6 @@
 import requests
 import uuid
-from config import TARGET_DATES, VIKING_COOKIE, VIKING_ORDER_ID, FIATU_SECRET, FIATU_AUTHORIZATION, FIATU_USER_ID
+from config import TARGET_DATES, VIKING_COOKIE, VIKING_ORDER_ID, FITATU_SECRET, FITATU_AUTHORIZATION, FITATU_USER_ID
 from datetime import datetime
 
 BRAND = "Viking"
@@ -8,8 +8,8 @@ BRAND = "Viking"
 viking_headers = {"Cookie": VIKING_COOKIE}
 fiatu_headers = {
     "Api-Key": "FITATU-MOBILE-APP",
-    "Api-Secret": FIATU_SECRET,
-    "Authorization": FIATU_AUTHORIZATION,
+    "Api-Secret": FITATU_SECRET,
+    "Authorization": FITATU_AUTHORIZATION,
     "Content-Type": "application/json"
 }
 
@@ -28,7 +28,7 @@ def fetch_data(url, headers):
         return None
 
 def search_product(name, date):
-    url = fiatu_search_product_url.format(id=FIATU_USER_ID, date=date, phrase=name)
+    url = fiatu_search_product_url.format(id=FITATU_USER_ID, date=date, phrase=name)
     response = requests.get(url, headers=fiatu_headers)
     if response.status_code == 200:
         products = response.json()
@@ -119,7 +119,7 @@ def process_date(target_date, data):
         for meal_name, meal_id in meal_ids.items():
             add_meal(diet_body[target_date]["dietPlan"], meal_name, meal_id, meal_weights.get(meal_name, 100))
 
-        diet_plan_response = requests.post(fiatu_diet_plan_url.format(id=FIATU_USER_ID), json=diet_body, headers=fiatu_headers)
+        diet_plan_response = requests.post(fiatu_diet_plan_url.format(id=FITATU_USER_ID), json=diet_body, headers=fiatu_headers)
         if diet_plan_response.status_code == 202:
             print(f"Diet plan created successfully for {target_date}")
         else:
