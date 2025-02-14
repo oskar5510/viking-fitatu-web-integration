@@ -14,3 +14,5 @@ FIATU_USER_ID = 00000000 // your user id in Fiatu
 FIATU_SECRET= "PYRX..."
 FIATU_AUTHORIZATION= "Bearer eyJ0eXAiOiJKV1..."
 ```
+
+Run python3 viking-fiatu-integration.py
