@@ -25,9 +25,13 @@ FITATU_AUTHORIZATION = "Bearer eyJ0eXAiOiJKV1..."
    - Obtain the `VIKING_COOKIE` by inspecting your session cookies after logging into Viking.
    - Find your `VIKING_ORDER_ID` in your Viking account/order history.
 
+![How to retrieve Viking data](img/viking.png)
+
 2. **Fitatu Credentials:**
    - `FITATU_USER_ID` can be found in your Fitatu account settings.
    - `FITATU_SECRET` and `FITATU_AUTHORIZATION` tokens are generated from Fitatu’s API or authentication system.
+
+![How to retrieve Fitatu data](img/fitatu.png)
 
 ## Run the Script
 
@@ -48,6 +52,9 @@ Product "Pierś z kurczaka w marynacie czosnkowo-miodowej w sosie własnym z zie
 ...
 Diet plan created successfully for 2025-02-21
 ```
+
+![Automatically created data in Fitatu](img/fitatu-target.png)
+
 
 ## Requirements
 
