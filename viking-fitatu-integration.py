@@ -17,7 +17,8 @@ viking_order_url = "https://panel.kuchniavikinga.pl/api/company/customer/order/{
 viking_date_details_url = "https://panel.kuchniavikinga.pl/api/company/general/menus/delivery/{id}/new"
 fitatu_create_product_url = "https://pl-pl.fitatu.com/api/products"
 fitatu_search_product_url = "https://pl-pl.fitatu.com/api/search/food/user/{id}?date={date}&phrase={phrase}&page=1&limit=1"
-fitatu_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-plan/{id}/days"
+fitatu_send_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-plan/{id}/days"
+fitatu_get_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-and-activity-plan/{id}/day/{date}"
 
 def fetch_data(url, headers):
     response = requests.get(url, headers=headers)
@@ -49,7 +50,16 @@ def create_product(product_data):
         print(f"Error creating product: {response.status_code} - {response.text}")
     return None
 
-def add_meal(diet_plan, meal_name, meal_id, meal_weight):
+def get_existing_diet_plan(date):
+    url = fitatu_get_diet_plan_url.format(id=FITATU_USER_ID, date=date)
+    response = fetch_data(url, headers=fitatu_headers)
+    existing_diet_plan = {}
+    if response and "dietPlan" in response:
+        for meal_key, meal_data in response["dietPlan"].items():
+            existing_diet_plan[meal_key] = {item["productId"] for item in meal_data.get("items", [])}
+    return existing_diet_plan
+
+def add_meal_to_diet_plan(diet_plan, meal_name, meal_id, meal_weight, existing_diet_plan) :
     if meal_id:
         meal_name_mapping = {
             "Śniadanie": "breakfast",
@@ -60,7 +70,11 @@ def add_meal(diet_plan, meal_name, meal_id, meal_weight):
         }
         if meal_name not in meal_name_mapping:
             raise ValueError(f"Meal name '{meal_name}' not found in translation map")
-        diet_plan[meal_name_mapping[meal_name]] = {"items": [{
+        mapped_meal_key = meal_name_mapping[meal_name]
+        if mapped_meal_key in existing_diet_plan and meal_id in existing_diet_plan[mapped_meal_key]:
+            print(f"Skipping \"{meal_name}\" as it already exists in the diet plan")
+            return
+        diet_plan[mapped_meal_key] = {"items": [{
             "planDayDietItemId": str(uuid.uuid1()),
             "foodType": "PRODUCT",
             "measureId": 1,
@@ -78,14 +92,14 @@ def process_date(target_date, data):
     
     for delivery in deliveries_on_date:
         delivery_id = delivery["deliveryId"]
-        date_data = fetch_data(viking_date_details_url.format(id=delivery_id), viking_headers)
-        if not date_data:
+        viking_date_data = fetch_data(viking_date_details_url.format(id=delivery_id), viking_headers)
+        if not viking_date_data:
             print(f"Failed to retrieve delivery details for {delivery_id}")
             continue
         
         meal_ids = {}
         meal_weights = {}
-        for meal in date_data.get("deliveryMenuMeal", []):
+        for meal in viking_date_data.get("deliveryMenuMeal", []):
             meal_name = meal.get("mealName", "")
             menu_meal_name = meal.get("menuMealName", "")
             nutrition = meal.get("nutrition", {})
@@ -115,11 +129,12 @@ def process_date(target_date, data):
             else:
                 print(f"Failed to create product for \"{menu_meal_name}\"")
 
-        diet_body = {target_date: {"dietPlan": {}}}
+        existing_diet_plan = get_existing_diet_plan(target_date)
+        diet_plan = {target_date: {"dietPlan": {}}}
         for meal_name, meal_id in meal_ids.items():
-            add_meal(diet_body[target_date]["dietPlan"], meal_name, meal_id, meal_weights.get(meal_name, 100))
+            add_meal_to_diet_plan(diet_plan[target_date]["dietPlan"], meal_name, meal_id, meal_weights.get(meal_name, 100), existing_diet_plan)
 
-        diet_plan_response = requests.post(fitatu_diet_plan_url.format(id=FITATU_USER_ID), json=diet_body, headers=fitatu_headers)
+        diet_plan_response = requests.post(fitatu_send_diet_plan_url.format(id=FITATU_USER_ID), json=diet_plan, headers=fitatu_headers)
         if diet_plan_response.status_code == 202:
             print(f"Diet plan created successfully for {target_date}")
         else:
