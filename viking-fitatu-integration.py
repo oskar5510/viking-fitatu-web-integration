@@ -1,9 +1,12 @@
 import requests
 import uuid
-from config import TARGET_DATES, VIKING_COOKIE, VIKING_ORDER_ID, FITATU_SECRET, FITATU_AUTHORIZATION, FITATU_USER_ID
-from datetime import datetime
+import config
+from config import (VIKING_COOKIE, VIKING_ORDER_ID, FITATU_SECRET, FITATU_AUTHORIZATION, FITATU_USER_ID)
+from datetime import datetime, timedelta
 
 BRAND = "Viking"
+TARGET_DATES = getattr(config, "TARGET_DATES", None)
+TARGET_DATE_RANGE = getattr(config, "TARGET_DATE_RANGE", None)
 
 viking_headers = {"Cookie": VIKING_COOKIE}
 fitatu_headers = {
@@ -19,6 +22,22 @@ fitatu_create_product_url = "https://pl-pl.fitatu.com/api/products"
 fitatu_search_product_url = "https://pl-pl.fitatu.com/api/search/food/user/{id}?date={date}&phrase={phrase}&page=1&limit=1"
 fitatu_send_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-plan/{id}/days"
 fitatu_get_diet_plan_url = "https://pl-pl.fitatu.com/api/diet-and-activity-plan/{id}/day/{date}"
+
+def select_dates():
+    if TARGET_DATES and TARGET_DATE_RANGE:
+        raise ValueError("Only one of TARGET_DATES or TARGET_DATE_RANGE should be provided, not both.")
+    if isinstance(TARGET_DATES, list):
+        print(f"Selected dates are {TARGET_DATES}")
+        return TARGET_DATES
+    elif isinstance(TARGET_DATE_RANGE, tuple) and len(TARGET_DATE_RANGE) == 2:
+        start_date_str, end_date_str = TARGET_DATE_RANGE
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+        print(f"Selected dates are from {start_date_str} to {end_date_str}")
+
+        return [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range((end_date - start_date).days + 1)]
+    print("No valid TARGET_DATES or TARGET_DATE_RANGE provided. Skipping...")
+    return []
 
 def fetch_data(url, headers):
     response = requests.get(url, headers=headers)
@@ -146,7 +165,7 @@ def main():
         print("Failed to retrieve orders")
         return
     
-    for target_date in TARGET_DATES:
+    for target_date in select_dates():
         process_date(target_date, order_data)
 
 if __name__ == "__main__":

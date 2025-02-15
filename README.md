@@ -7,7 +7,8 @@ A script to integrate Viking orders with Fitatu.
 Create a `config.py` file in the same directory as the script with the following content:
 
 ```python
-TARGET_DATES = ["2025-02-14", "2025-02-15"]
+#TARGET_DATES = ["2025-02-14", "2025-02-15"]
+TARGET_DATE_RANGE = ("2025-02-14", "2025-02-15")
 
 # Viking
 VIKING_COOKIE = "__ca__chat=tbb...; SESSION=MzI3N..."
@@ -18,6 +19,13 @@ FITATU_USER_ID = 00000000  # Your user ID in Fitatu
 FITATU_SECRET = "PYRX..."
 FITATU_AUTHORIZATION = "Bearer eyJ0eXAiOiJKV1..."
 ```
+
+### About TARGET_DATES and TARGET_DATE_RANGE
+
+* TARGET_DATES: A list of specific dates in the format ["YYYY-MM-DD", "YYYY-MM-DD"]. You can use this if you want to provide a specific set of dates. This is an alternative to using TARGET_DATE_RANGE. You should not use both options at the same time.
+* TARGET_DATE_RANGE: A tuple of two dates in the format ("YYYY-MM-DD", "YYYY-MM-DD"). This range of dates will be used to generate a list of dates between the start and end date, inclusive. This is useful when you want to generate dates automatically for a given range.
+
+You can choose to use either TARGET_DATES or TARGET_DATE_RANGE, but not both. If both are provided, an error will be raised.
 
 ### How to Retrieve Data for Configuration File
 
