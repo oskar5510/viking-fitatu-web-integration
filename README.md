@@ -2,6 +2,10 @@
 
 A script to integrate Viking orders with Fitatu.
 
+## Disclaimer
+
+This script was created for personal use. Anyone is free to use it, but you are responsible for configuring it with your own data, credentials, and any modifications needed to fit your requirements. Use it at your own risk.
+
 ## Configuration
 
 Create a `config.py` file in the same directory as the script with the following content:
@@ -54,11 +58,15 @@ python3 viking-fitatu-integration.py
 Example output when running the script:
 
 ```sh
-Product "Szakszuka z jajkiem sadzonym i szczypiorkiem, chleb graham" created successfully with id 108169011
-Product "Shake wiśniowo-czereśniowy" created successfully with id 108169014
-Product "Pierś z kurczaka w marynacie czosnkowo-miodowej w sosie własnym z ziemniakami i surówką kopenhaską" created successfully with id 108169017
+2025-02-16 21:16:47,884 - INFO - Selected date range: ('2025-02-21', '2025-02-21')
+2025-02-16 21:16:47,884 - INFO - Processing 2025-02-21
+2025-02-16 21:16:48,311 - INFO - Product 'Quesadilla z indykiem, papryką i mozzarellą z sosem czosnkowo-koperkowym' found with ID 0000000
+2025-02-16 21:16:48,477 - INFO - Product 'Proteinowy shake egzotyczne owoce' found with ID 0000000
+2025-02-16 21:16:49,263 - INFO - Marking 'Pasta jajeczna z polędwicą wieprzową i szczypiorkiem, bułeczka pszenna, pomidorki' as deleted
+2025-02-16 21:16:49,264 - INFO - Added 'Śniadanie' with product ID 0000000 to diet plan
+2025-02-16 21:16:49,264 - INFO - Skipping 'II śniadanie' - already exists in diet plan
 ...
-Diet plan created successfully for 2025-02-21
+2025-02-16 21:16:49,418 - INFO - Fitatu Diet Plan updated for 2025-02-2
 ```
 
 ![Automatically created data in Fitatu](img/fitatu-target.png)
