@@ -167,16 +167,16 @@ def process_meal(delivery: dict, target_date: str) -> tuple[str, str]:
 
     meal_ids, meal_weights = {}, {}
     for meal in viking_date_data.get("deliveryMenuMeal", []):
-        menu_meal_name = meal.get("menuMealName", "")
-        meal_name = meal.get("mealName", "")
-        nutrition = meal.get("nutrition", {})
-        weight = nutrition.get("weight", "N/A")
+        menu_meal_name = meal.get("menuMealName")
+        if (menu_meal_name):
+            meal_name = meal.get("mealName", "")
+            nutrition = meal.get("nutrition", {})
+            weight = nutrition.get("weight", "N/A")
 
-        product_id = create_or_find_product(menu_meal_name, nutrition, weight, target_date)
-        if product_id:
-            meal_ids[meal_name] = product_id
-            meal_weights[meal_name] = weight
-
+            product_id = create_or_find_product(menu_meal_name, nutrition, weight, target_date)
+            if product_id:
+                meal_ids[meal_name] = product_id
+                meal_weights[meal_name] = weight
     return meal_ids, meal_weights
 
 
