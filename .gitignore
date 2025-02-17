@@ -5,6 +5,7 @@ __pycache__/
 config.py
 .DS_Store
 myenv
+meal_counts.csv
 
 # C extensions
 *.so
