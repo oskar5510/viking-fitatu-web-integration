@@ -22,7 +22,8 @@ class APIConfig:
         "Content-Type": "application/json"
     }
 
-    VIKING_ORDER_URL = f"https://panel.kuchniavikinga.pl/api/company/customer/order/{VIKING_ORDER_ID}"
+    VIKING_ORDER_LIST = "https://panel.kuchniavikinga.pl/api/company/customer/order/all"
+    VIKING_ORDER_URL = "https://panel.kuchniavikinga.pl/api/company/customer/order/{id}"
     VIKING_DATE_DETAILS_URL = "https://panel.kuchniavikinga.pl/api/company/general/menus/delivery/{id}/new"
 
     FITATU_BASE_URL = "https://pl-pl.fitatu.com/api"
@@ -37,7 +38,7 @@ class BaseClient:
 
     @staticmethod
     def get(url: str, headers: dict) -> dict | None:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
         if response.status_code == 200:
             return response.json()
         logging.error(f"Error fetching data from {url}: {response.status_code} - {response.text}")
@@ -45,7 +46,7 @@ class BaseClient:
 
     @staticmethod
     def post(url: str, data: dict, headers: dict) -> dict | None:
-        response = requests.post(url, json=data, headers=headers)
+        response = requests.post(url, json=data, headers=headers, timeout=30)
         if response.status_code in (200, 201, 202):
             response_data = response.json()
             if isinstance(response_data, list):
@@ -253,7 +254,7 @@ def publish_diet_plan(date: str, meal_ids: dict, meal_weights: dict):
 
 def main():
     """Main execution flow."""
-    order_data = VikingClient.get(APIConfig.VIKING_ORDER_URL)
+    order_data = VikingClient.get(APIConfig.VIKING_ORDER_URL.format(id=VIKING_ORDER_ID))
     if not order_data:
         logging.error("Failed to retrieve orders")
         return

@@ -50,7 +50,7 @@ You can choose to use either TARGET_DATES or TARGET_DATE_RANGE, but not both. If
 Execute the following command in your terminal:
 
 ```sh
-python3 viking-fitatu-integration.py
+python3 viking_fitatu_integration.py
 ```
 
 ## Expected Output
