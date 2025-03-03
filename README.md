@@ -14,6 +14,15 @@ Create a `config.py` file in the same directory as the script with the following
 #TARGET_DATES = ["2025-02-14", "2025-02-15"]
 TARGET_DATE_RANGE = ("2025-02-14", "2025-02-15")
 
+# Meal Mapping Configuration (optional)
+MEAL_MAPPING = {
+   "Śniadanie": "breakfast",
+   "II śniadanie": "second_breakfast",
+   "Obiad": "dinner",
+   "Podwieczorek": "snack",
+   "Kolacja": "supper"
+}
+
 # Viking
 VIKING_COOKIE = "__ca__chat=tbb...; SESSION=MzI3N..."
 VIKING_ORDER_ID = 0000000  # Your order ID in Viking
@@ -30,6 +39,48 @@ FITATU_AUTHORIZATION = "Bearer eyJ0eXAiOiJKV1..."
 * TARGET_DATE_RANGE: A tuple of two dates in the format ("YYYY-MM-DD", "YYYY-MM-DD"). This range of dates will be used to generate a list of dates between the start and end date, inclusive. This is useful when you want to generate dates automatically for a given range.
 
 You can choose to use either TARGET_DATES or TARGET_DATE_RANGE, but not both. If both are provided, an error will be raised.
+
+### Meal Mapping Configuration
+
+In the config.py file, you can define a mapping for meal names to Fitatu meal types for exampe, when user does not have "Podwieczorek" in Viking, and does not have Breakfests in Fitatu:
+
+```python
+MEAL_MAPPING = {
+    "Śniadanie": "lunch",
+    "II śniadanie": "lunch",
+    "Obiad": "dinner",
+    "Kolacja": "supper"
+}
+```
+
+#### Default Meal Mapping Configuration
+
+If you prefer to use the standard configuration, you **do not need to modify** the `MEAL_MAPPING` dictionary. The default mapping is as follows:
+
+```python
+MEAL_MAPPING = {
+    "Śniadanie": "breakfast",
+    "II śniadanie": "second_breakfast",
+    "Obiad": "dinner",
+    "Podwieczorek": "snack",
+    "Kolacja": "supper"
+}
+```
+
+#### Custom Meal Mapping
+
+You can customize the mapping if needed. The keys in MEAL_MAPPING represent the meal names in your Viking orders, and the values represent the corresponding meal types in Fitatu.
+
+Valid meal types in Fitatu:
+
+* "breakfast"
+* "second_breakfast"
+* "dinner"
+* "lunch"
+* "snack"
+* "supper"
+
+These values must match one of the predefined meal types in Fitatu.
 
 ### How to Retrieve Data for Configuration File
 

@@ -11,6 +11,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 BRAND = "Viking"
 TARGET_DATES = getattr(config, "TARGET_DATES", None)
 TARGET_DATE_RANGE = getattr(config, "TARGET_DATE_RANGE", None)
+MEAL_MAPPING = getattr(config, 'MEAL_MAPPING', {
+    "Śniadanie": "breakfast",
+    "II śniadanie": "second_breakfast",
+    "Obiad": "dinner",
+    "Podwieczorek": "snack",
+    "Kolacja": "supper"
+})
 
 class APIConfig:
     """Stores API configurations for Viking and Fitatu."""
@@ -168,6 +175,10 @@ def process_meal(delivery: dict, target_date: str) -> tuple[str, str]:
 
     meal_ids, meal_weights = {}, {}
     for meal in viking_date_data.get("deliveryMenuMeal", []):
+        if meal.get("deliveryMealId") is None:
+            logging.info(f"Skipping '{meal.get("mealName", "")}' - there is no develivery")
+            continue
+
         menu_meal_name = meal.get("menuMealName")
         if (menu_meal_name):
             meal_name = meal.get("mealName", "")
@@ -201,17 +212,10 @@ def process_date(target_date: str, data: dict) -> dict:
 
 def add_meal_to_diet_plan(diet_plan: dict, meal_name: str, meal_id: str, meal_weight: int, existing_plan: dict):
     """Adds a meal to the diet plan while avoiding duplicates."""
-    meal_mapping = {
-        "Śniadanie": "breakfast",
-        "II śniadanie": "second_breakfast",
-        "Obiad": "dinner",
-        "Podwieczorek": "snack",
-        "Kolacja": "supper"
-    }
-
-    mapped_key = meal_mapping.get(meal_name)
+    mapped_key = MEAL_MAPPING.get(meal_name)
     if not mapped_key:
-        raise ValueError(f"Unknown meal name: {meal_name}")
+        logging.info(f"Skipping '{meal_name}' - not supported meal by mapping configuration")
+        return
 
     if meal_id and mapped_key in existing_plan and any(item.get("productId") == meal_id for item in existing_plan[mapped_key]):
         logging.info(f"Skipping '{meal_name}' - already exists in diet plan")
