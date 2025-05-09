@@ -31,7 +31,8 @@ def get_meals_from_delivery(delivery_id: str) -> List[str]:
     """Fetch meal names from a specific delivery."""
     try:
         meal_details = VikingClient.get(APIConfig.VIKING_DATE_DETAILS_URL.format(id=delivery_id))
-        return [meal.get("menuMealName") for meal in meal_details.get("deliveryMenuMeal", []) if meal.get("menuMealName")]
+        return [meal.get("menuMealName") for meal in meal_details.get("deliveryMenuMeal", []) if
+                meal.get("menuMealName")]
     except Exception as e:
         logging.error(f"Error fetching meal details for delivery {delivery_id}: {e}")
         return []

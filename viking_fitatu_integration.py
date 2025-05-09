@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 import uuid
 import logging
@@ -70,7 +72,7 @@ class VikingClient(BaseClient):
     """Handles API interactions with Viking."""
 
     @staticmethod
-    def get(url: str) -> dict | None:
+    def get(url: str, **kwargs) -> dict | None:
         return BaseClient.get(url, APIConfig.VIKING_HEADERS)
 
 
@@ -78,11 +80,11 @@ class FitatuClient(BaseClient):
     """Handles API interactions with Fitatu."""
 
     @staticmethod
-    def get(url: str) -> dict | None:
+    def get(url: str, **kwargs) -> dict | None:
         return BaseClient.get(url, APIConfig.FITATU_HEADERS)
 
     @staticmethod
-    def post(url: str, data: dict) -> dict | None:
+    def post(url: str, data: dict, **kwargs) -> dict | None:
         return BaseClient.post(url, data, APIConfig.FITATU_HEADERS)
 
 
@@ -128,7 +130,7 @@ def get_existing_diet_plan(date: str) -> dict:
     """Retrieves existing diet plan for the given date."""
     response = FitatuClient.get(APIConfig.FITATU_GET_DIET_PLAN_URL.format(date=date))
     return {
-        meal_key: [item for item in meal_data.get("items", []) if item.get("brand") == BRAND]
+        meal_key: [item for item in meal_data.get("items") if item.get("brand") == BRAND]
         for meal_key, meal_data in response.get("dietPlan", {}).items()
     } if response else {}
 
@@ -165,7 +167,7 @@ def create_or_find_product(menu_meal_name: str, nutrition: dict, weight: str, ta
     return create_product(product_data)
 
 
-def process_meal(delivery: dict, target_date: str) -> tuple[str, str]:
+def process_meal(delivery: dict, target_date: str) -> tuple[None, None] | tuple[dict[Any, Any], dict[Any, Any]]:
     """Processes a single meal and returns its product ID and weight."""
     delivery_id = delivery["deliveryId"]
     viking_date_data = fetch_viking_meal_details(delivery_id)
@@ -176,14 +178,14 @@ def process_meal(delivery: dict, target_date: str) -> tuple[str, str]:
     meal_ids, meal_weights = {}, {}
     for meal in viking_date_data.get("deliveryMenuMeal", []):
         if meal.get("deliveryMealId") is None:
-            logging.info(f"Skipping '{meal.get("mealName", "")}' - there is no develivery")
+            logging.info(f"Skipping '{meal.get("mealName")}' - there is no develivery")
             continue
 
         menu_meal_name = meal.get("menuMealName")
-        if (menu_meal_name):
-            meal_name = meal.get("mealName", "")
-            nutrition = meal.get("nutrition", {})
-            weight = nutrition.get("weight", "N/A")
+        if menu_meal_name:
+            meal_name = meal.get("mealName")
+            nutrition = meal.get("nutrition")
+            weight = nutrition.get("weight")
 
             product_id = create_or_find_product(menu_meal_name, nutrition, weight, target_date)
             if product_id:
@@ -217,7 +219,8 @@ def add_meal_to_diet_plan(diet_plan: dict, meal_name: str, meal_id: str, meal_we
         logging.info(f"Skipping '{meal_name}' - not supported meal by mapping configuration")
         return
 
-    if meal_id and mapped_key in existing_plan and any(item.get("productId") == meal_id for item in existing_plan[mapped_key]):
+    if meal_id and mapped_key in existing_plan and any(
+            item.get("productId") == meal_id for item in existing_plan[mapped_key]):
         logging.info(f"Skipping '{meal_name}' - already exists in diet plan")
         return
 
